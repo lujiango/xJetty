@@ -1,5 +1,7 @@
 package com.github.xJetty.core;
 
+import org.apache.log4j.Logger;
+
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
@@ -7,7 +9,7 @@ import javassist.bytecode.annotation.Annotation;
 
 import com.github.xJetty.annotation.Entry;
 import com.github.xJetty.annotation.Register;
-import com.github.xJetty.annotation.ZKPath;
+import com.github.xJetty.annotation.ZKConf;
 import com.impetus.annovention.ClasspathDiscoverer;
 import com.impetus.annovention.Discoverer;
 import com.impetus.annovention.listener.ClassAnnotationObjectDiscoveryListener;
@@ -15,6 +17,7 @@ import com.impetus.annovention.listener.FieldAnnotationObjectDiscoveryListener;
 import com.impetus.annovention.listener.MethodAnnotationObjectDiscoveryListener;
 
 public class AnnotationMapper {
+	private static final Logger LOG = Logger.getLogger(AnnotationMapper.class);
 
 	static void process() {
 		Discoverer discover = new ClasspathDiscoverer();
@@ -52,7 +55,7 @@ public class AnnotationMapper {
 			FieldAnnotationObjectDiscoveryListener {
 
 		public String[] supportedAnnotations() {
-			return new String[] { ZKPath.class.getName() };
+			return new String[] { ZKConf.class.getName() };
 		}
 
 		public void discovered(ClassFile clazz, FieldInfo field,

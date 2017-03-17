@@ -1,4 +1,4 @@
-package com.github.xJetty.zk;
+package com.github.xJetty.core;
 
 import java.io.IOException;
 
@@ -7,13 +7,14 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.ZooKeeper.States;
 
 public class ZkClient {
-	private static Logger LOG = Logger.getLogger(ZkClient.class);
+	private static final Logger LOG = Logger.getLogger(ZkClient.class);
+	private static ZooKeeper zookeeper = null;
 	
-	private String zkIp;
+	private static String zkIp;
 	private int zkPort;
 	private String zkUser;
 	private String zkPasswd;
-	private static ZooKeeper zookeeper = null;
+	
 	
 	public ZkClient(String zkIp, int zkPort) {
 		this.zkIp = zkIp;
@@ -27,17 +28,11 @@ public class ZkClient {
 			LOG.warn("Connect zookeeper failed. ", e);
 			while (zookeeper.getState() != States.CONNECTED) {
 				try {
-					Thread.currentThread().sleep(5000);
+					Thread.sleep(5000);
 				} catch (InterruptedException e1) {
 					LOG.warn("zookeeper connect failed. ", e1);
 				}
 			}
-			
-			
 		}
-		
-		
-		
 	}
-	
 }
