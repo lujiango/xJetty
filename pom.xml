@@ -8,7 +8,25 @@
 	<description>xJetty is a distruted server basic on Jetty</description>
 	<properties>
 		<jettyVersion>9.3.10.v20160621</jettyVersion>
+		<zkVersion>3.4.9</zkVersion>
+		<annoventionVersion>1.7</annoventionVersion>
+		<gsonVersion>2.8.0</gsonVersion>
+		<junitVersion>4.12</junitVersion>
 	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
@@ -23,26 +41,24 @@
 		<dependency>
 			<groupId>tv.cntt</groupId>
 			<artifactId>annovention</artifactId>
-			<version>1.7</version>
+			<version>${annoventionVersion}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.zookeeper</groupId>
 			<artifactId>zookeeper</artifactId>
-			<version>3.4.0</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.sun.jdmk</groupId>
-					<artifactId>jmxtools</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.sun.jmx</groupId>
-					<artifactId>jmxri</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>javax.jms</groupId>
-					<artifactId>jms</artifactId>
-				</exclusion>
-			</exclusions>
+			<version>${zkVersion}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>${gsonVersion}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junitVersion}</version>
+		</dependency>
+
 	</dependencies>
 </project>
