@@ -24,7 +24,7 @@ public class xJetty {
 		
 		Configuration.setDefaultLogConfig();
 		
-		parseArgs(args);
+		Configuration.parseArgs(args);
 		
 		ZkClient.connect();
 		
@@ -35,8 +35,4 @@ public class xJetty {
 		Startup.startup();
 	}
 	
-	
-	private static void parseArgs(String args) {
-		
-	}
 }
