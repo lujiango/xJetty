@@ -14,7 +14,7 @@ public class HttpClient {
 	private static org.eclipse.jetty.client.HttpClient httpClient = new org.eclipse.jetty.client.HttpClient();
 
 	@Entry(startup = -1000)
-	public void process() {
+	public void doStart() {
 		httpClient.setConnectTimeout(5000);
 		try {
 			httpClient.start();

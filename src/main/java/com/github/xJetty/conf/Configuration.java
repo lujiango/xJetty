@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.github.xJetty.core.ZkClient;
-import com.github.xJetty.core.ZkClient.Param;
+import com.github.xJetty.core.ZkClient.ConnectParam;
 import com.github.xJetty.utils.Constants;
 
 /**
@@ -36,19 +36,8 @@ public class Configuration {
 			System.exit(Constants.EXIT_CODE);
 		}
 	}
-	
-	public static void parseArgs(String args) {
-		Pattern p = Pattern.compile("");
-		Matcher m = p.matcher(args);
-		if (!m.find() || m.groupCount() != 4) {
-			LOG.error("");
-			throw new IllegalArgumentException("Argument should be seen as zkuser:zkpasswd@zkip:zkport/zkpath");
-		}
-		Param param = new ZkClient.Param(m.group(0), m.group(1), m.group(2), Integer.parseInt(m.group(3)), m.group(4));
-		ZkClient.setParam(param);
-	}
-	
-	
+
+
 	public static void setConfigFromZookeeper() {
 
 	}

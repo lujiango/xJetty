@@ -19,7 +19,7 @@ public class HttpServer {
 	private static String ip = null;
 
 	@Entry(startup = -900)
-	public void process() {
+	public void doStart() {
 
 	}
 
