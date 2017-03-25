@@ -1,4 +1,4 @@
-package com.github.xJetty.annotation;
+package org.github.xJetty.annotation;
 
 
 public @interface Entry {

@@ -1,9 +1,8 @@
-package com.github.xJetty.http;
+package org.github.xJetty.http;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Server;
-
-import com.github.xJetty.annotation.Entry;
+import org.github.xJetty.annotation.Entry;
 /**
  * 
  * @author lujiango

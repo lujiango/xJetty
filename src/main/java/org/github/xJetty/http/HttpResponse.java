@@ -1,4 +1,4 @@
-package com.github.xJetty.http;
+package org.github.xJetty.http;
 
 public class HttpResponse {
 

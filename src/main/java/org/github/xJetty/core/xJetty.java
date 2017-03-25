@@ -1,6 +1,6 @@
-package com.github.xJetty.core;
+package org.github.xJetty.core;
 
-import com.github.xJetty.conf.Configuration;
+import org.github.xJetty.conf.Configuration;
 /**
  * 
  * @author lujiango

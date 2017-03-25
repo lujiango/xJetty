@@ -1,4 +1,4 @@
-package com.github.xJetty.core;
+package org.github.xJetty.core;
 
 import java.util.concurrent.BlockingQueue;
 

@@ -1,4 +1,4 @@
-package com.github.xJetty.utils;
+package org.github.xJetty.utils;
 
 public final class Constants {
 	

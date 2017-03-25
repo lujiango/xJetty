@@ -1,4 +1,4 @@
-package com.github.xJetty.core;
+package org.github.xJetty.core;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -14,8 +14,7 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.ZooKeeper.States;
-
-import com.github.xJetty.utils.SecurityUtils;
+import org.github.xJetty.utils.SecurityUtils;
 
 public final class ZkClient {
 	private static final Logger LOG = Logger.getLogger(ZkClient.class);

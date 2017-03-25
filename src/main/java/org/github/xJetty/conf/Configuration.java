@@ -1,4 +1,4 @@
-package com.github.xJetty.conf;
+package org.github.xJetty.conf;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,10 +8,9 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
-
-import com.github.xJetty.core.ZkClient;
-import com.github.xJetty.core.ZkClient.ConnectParam;
-import com.github.xJetty.utils.Constants;
+import org.github.xJetty.core.ZkClient;
+import org.github.xJetty.core.ZkClient.ConnectParam;
+import org.github.xJetty.utils.Constants;
 
 /**
  * 

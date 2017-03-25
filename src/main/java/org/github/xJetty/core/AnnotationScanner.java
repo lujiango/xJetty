@@ -1,15 +1,15 @@
-package com.github.xJetty.core;
+package org.github.xJetty.core;
 
 import org.apache.log4j.Logger;
+import org.github.xJetty.annotation.Entry;
+import org.github.xJetty.annotation.Register;
+import org.github.xJetty.annotation.ZKConf;
 
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.FieldInfo;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.annotation.Annotation;
 
-import com.github.xJetty.annotation.Entry;
-import com.github.xJetty.annotation.Register;
-import com.github.xJetty.annotation.ZKConf;
 import com.impetus.annovention.ClasspathDiscoverer;
 import com.impetus.annovention.Discoverer;
 import com.impetus.annovention.listener.ClassAnnotationObjectDiscoveryListener;
