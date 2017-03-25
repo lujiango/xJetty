@@ -5,7 +5,7 @@ package org.github.xJetty.routing;
  * @author lujiango
  *
  */
-public class Route {
+public final class Route {
 	private static Table routingTable = new Table();
 
 	public static Address routing(String serviceName) {

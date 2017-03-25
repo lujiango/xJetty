@@ -32,7 +32,7 @@ public class Configuration {
 			PropertyConfigurator.configure(logProperties);
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.exit(Constants.EXIT_CODE);
+			System.exit(Constants.XJETTY_EXIT_CODE);
 		}
 	}
 
@@ -41,8 +41,18 @@ public class Configuration {
 
 	}
 
-	private static String getCfgValue(String key, String defaultValue) {
+	public static String getCfgValue(String key, String defaultValue) {
 		return confProperties.getProperty(key, defaultValue);
 	}
+	
+	public static int getAsInt(String key, int defaultValue) {
+		return 0;
+	}
+	
+	public static String getAsString(String key, String defaultValue) {
+		return null;
+	}
+	
+	
 
 }

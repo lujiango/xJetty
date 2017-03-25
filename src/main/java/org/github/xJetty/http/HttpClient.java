@@ -2,6 +2,7 @@ package org.github.xJetty.http;
 
 import org.apache.log4j.Logger;
 import org.github.xJetty.annotation.Entry;
+import org.eclipse.jetty.client.*;
 
 /**
  * 
@@ -10,15 +11,25 @@ import org.github.xJetty.annotation.Entry;
  */
 public class HttpClient {
 	private static final Logger LOG = Logger.getLogger(HttpClient.class);
-	private static org.eclipse.jetty.client.HttpClient httpClient = new org.eclipse.jetty.client.HttpClient();
-
+	private org.eclipse.jetty.client.HttpClient client;
+	public HttpClient() {
+		client = new org.eclipse.jetty.client.HttpClient();
+	}
 	@Entry(startup = -1000)
-	public void doStart() {
-		httpClient.setConnectTimeout(5000);
-		try {
-			httpClient.start();
-		} catch (Exception e) {
-			LOG.fatal("start http client occur exception and system exit: ", e);
+	public void startup() {
+		HttpClient client = new HttpClient();
+		client.doStart();
+		
+	}
+	
+	private void doStart() {
+		if (client != null) {
+			try {
+				client.start();
+			} catch (Exception e) {
+				LOG.fatal("xJetty http client start exception: ", e);
+			}
 		}
 	}
+	
 }
