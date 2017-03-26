@@ -3,7 +3,7 @@ package org.github.xJetty.routing;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Table {
+public class RoutingTable {
 	private Map<String, CycleQueue<Address>> elements = new ConcurrentHashMap<String, CycleQueue<Address>>();
 
 	public void put(String key, CycleQueue<Address> value) {

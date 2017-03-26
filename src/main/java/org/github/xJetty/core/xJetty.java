@@ -10,7 +10,7 @@ import org.github.xJetty.conf.Configuration;
 public class xJetty {
 	
 	public static void main(String[] args) {
-		xJetty.xjetty("admin:admin@127.0.0.1:2181/zookeeper/lujiango/xjetty/xjetty-1");
+		xJetty.start("admin:admin@127.0.0.1:2181/zookeeper/lujiango/xjetty/xjetty-1");
 	}
 	
 	/**
@@ -18,7 +18,7 @@ public class xJetty {
 	 * @param args zkUser:zkPasswd@zkIp:zkPortzkPath
 	 * eg: admin:admin@127.0.0.1:2181/xjetty/xjetty-1
 	 */
-	public static void xjetty(String args) {
+	public static void start(String args) {
 		
 		Configuration.setDefaultLogConfig();
 		
@@ -26,7 +26,7 @@ public class xJetty {
 		
 		Configuration.setConfigFromZookeeper();
 		
-		AnnotationScanner.scanAnnotations();
+		AnnotationScanner.scanSupportedAnnotations();
 		
 		Startup.startup();
 	}

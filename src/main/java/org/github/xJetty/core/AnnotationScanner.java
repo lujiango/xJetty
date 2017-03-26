@@ -16,10 +16,10 @@ import com.impetus.annovention.listener.ClassAnnotationObjectDiscoveryListener;
 import com.impetus.annovention.listener.FieldAnnotationObjectDiscoveryListener;
 import com.impetus.annovention.listener.MethodAnnotationObjectDiscoveryListener;
 
-public class AnnotationScanner {
+public final class AnnotationScanner {
 	private static final Logger LOG = Logger.getLogger(AnnotationScanner.class);
 
-	static void scanAnnotations() {
+	static void scanSupportedAnnotations() {
 		LOG.info("start scan annotations...");
 		long start = System.currentTimeMillis();
 		Discoverer discover = new ClasspathDiscoverer();
@@ -34,7 +34,7 @@ public class AnnotationScanner {
 			ClassAnnotationObjectDiscoveryListener {
 
 		public String[] supportedAnnotations() {
-			return new String[] { Entry.class.getName() };
+			return new String[] { Register.class.getName() };
 		}
 
 		public void discovered(ClassFile clazz, Annotation annotation) {
@@ -47,7 +47,7 @@ public class AnnotationScanner {
 			MethodAnnotationObjectDiscoveryListener {
 
 		public String[] supportedAnnotations() {
-			return new String[] { Register.class.getName() };
+			return new String[] { Entry.class.getName()};
 		}
 
 		public void discovered(ClassFile clazz, MethodInfo method,

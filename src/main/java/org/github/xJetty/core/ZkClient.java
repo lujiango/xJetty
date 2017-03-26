@@ -1,7 +1,6 @@
 package org.github.xJetty.core;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -23,16 +22,17 @@ public final class ZkClient {
 	
 	private static final int CONNECT_INTERVAL = 5000;
 	
-	private static final int reconnect_threshold = 7;
+	private static final int RECONNECT_THRESHOLD = 7;
 	
 	private static final String AUTH = "digest";
 	
-	private static final String args_regex = "(\\w+):(\\w+)@([^/]+)(/.+)";
+	private static final String ARGS_REGEX = "(\\w+):(\\w+)@([^/]+)(/.+)";
 	
 	private static ZooKeeper zookeeper = null;
 	
 	private static ConnectParam cacheParam = new ConnectParam("admin", "admin", "127.0.0.1", 2181, "/");
-
+	
+	
 	private static Map<String, List<Watcher>> watchers = new ConcurrentHashMap<String, List<Watcher>>();
 	
 	private static Watcher connectWatcher = new Watcher() {
@@ -102,7 +102,7 @@ public final class ZkClient {
 	}
 
 	public static void connect(String args) {
-		Pattern p = Pattern.compile(args_regex);
+		Pattern p = Pattern.compile(ARGS_REGEX);
 		Matcher m = p.matcher(args);
 		if (!m.find() || m.groupCount() != 4) {
 			LOG.error("Argument should be seen as zkuser:zkpasswd@zkip:zkport/zkpath, args:" + args);
@@ -118,7 +118,7 @@ public final class ZkClient {
 			try {
 				Thread.sleep(CONNECT_INTERVAL);
 				ZooKeeper zk = new ZooKeeper(param.getAddress(), SESSION_TIMEOUT, connectWatcher);
-				if (retryTimes > reconnect_threshold) {
+				if (retryTimes > RECONNECT_THRESHOLD) {
 					throw new IllegalStateException("Reconnect zookeeper " + retryTimes + " times");
 				}
 				retryTimes++;
@@ -137,6 +137,42 @@ public final class ZkClient {
 	public static void setZookeeper(ZooKeeper zookeeper) {
 		ZkClient.zookeeper = zookeeper;
 	}
+	
+	
+	
+
+	public static ConnectParam getCacheParam() {
+		return cacheParam;
+	}
+
+	public static List<String> getAllChildren(String parent) {
+		return getChildren1(parent, true);
+	}
+	
+	public static List<String> getChildren(String parent) {
+		return getChildren1(parent, false);
+	}
+	private static List<String> getChildren1(String parent, boolean recursion) {
+		return null;
+	}
+	
+	public static Object get(String key, Object defaultValue) {
+		return null;
+	}
+	
+	public static String getString(String key, String defaultValue) {
+		return null;
+	}
+	
+	public static int getInt(String key, int defaultValue) {
+		return 0;
+	}
+	
+	public static void watch(String path, Watcher watcher, boolean isReconnect) {
+		
+	}
+	
+
 
 	public static class ConnectParam {
 		private String zkUser;
@@ -155,6 +191,10 @@ public final class ZkClient {
 
 		public String getAddress() {
 			return zkIp + ":" + zkPort;
+		}
+		
+		public String getZkPath() {
+			return zkPath;
 		}
 
 		public byte[] authUserPasswd() {

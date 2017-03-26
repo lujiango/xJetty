@@ -6,7 +6,7 @@ package org.github.xJetty.routing;
  *
  */
 public final class Route {
-	private static Table routingTable = new Table();
+	private static RoutingTable routingTable = new RoutingTable();
 
 	public static Address routing(String serviceName) {
 		CycleQueue<Address> addresses = routingTable.get(serviceName);

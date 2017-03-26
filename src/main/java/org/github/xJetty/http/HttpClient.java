@@ -2,7 +2,6 @@ package org.github.xJetty.http;
 
 import org.apache.log4j.Logger;
 import org.github.xJetty.annotation.Entry;
-import org.eclipse.jetty.client.*;
 
 /**
  * 
@@ -12,16 +11,18 @@ import org.eclipse.jetty.client.*;
 public class HttpClient {
 	private static final Logger LOG = Logger.getLogger(HttpClient.class);
 	private org.eclipse.jetty.client.HttpClient client;
+
 	public HttpClient() {
 		client = new org.eclipse.jetty.client.HttpClient();
 	}
+
 	@Entry(startup = -1000)
-	public void startup() {
+	public static void startup() {
 		HttpClient client = new HttpClient();
 		client.doStart();
-		
+
 	}
-	
+
 	private void doStart() {
 		if (client != null) {
 			try {
@@ -31,5 +32,4 @@ public class HttpClient {
 			}
 		}
 	}
-	
 }
