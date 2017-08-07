@@ -1,6 +1,6 @@
-package org.github.xJetty.utils;
+package org.github.x.jetty.utils;
 
-public final class Constants {
+public final class Consts {
 	
 	public static final int XJETTY_EXIT_CODE = -1;
 	

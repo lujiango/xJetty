@@ -1,4 +1,4 @@
-package org.github.xJetty.core;
+package org.github.x.jetty.core;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,7 +13,7 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.ZooKeeper.States;
-import org.github.xJetty.utils.SecurityUtils;
+import org.github.x.jetty.utils.SecurityUtils;
 
 public final class ZkClient {
 	private static final Logger LOG = Logger.getLogger(ZkClient.class);

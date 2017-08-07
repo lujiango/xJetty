@@ -1,7 +1,7 @@
-package org.github.xJetty.http;
+package org.github.x.jetty.http;
 
 import org.apache.log4j.Logger;
-import org.github.xJetty.annotation.Entry;
+import org.github.x.jetty.core.Entry;
 
 /**
  * 

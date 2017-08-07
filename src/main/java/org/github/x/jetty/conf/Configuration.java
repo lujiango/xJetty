@@ -1,4 +1,4 @@
-package org.github.xJetty.conf;
+package org.github.x.jetty.conf;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,8 +10,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
-import org.github.xJetty.core.ZkClient;
-import org.github.xJetty.utils.Constants;
+import org.github.x.jetty.core.ZkClient;
+import org.github.x.jetty.utils.Consts;
 
 /**
  * 
@@ -32,7 +32,7 @@ public class Configuration {
 			PropertyConfigurator.configure(logProperties);
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.exit(Constants.XJETTY_EXIT_CODE);
+			System.exit(Consts.XJETTY_EXIT_CODE);
 		}
 	}
 

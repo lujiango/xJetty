@@ -1,4 +1,4 @@
-package org.github.xJetty.http;
+package org.github.x.jetty.http;
 
 import java.io.IOException;
 
