@@ -1,4 +1,4 @@
-package org.github.xJetty.http;
+package org.github.x.Jetty.http;
 
 import org.github.x.jetty.http.HttpClient;
 import org.junit.Test;
