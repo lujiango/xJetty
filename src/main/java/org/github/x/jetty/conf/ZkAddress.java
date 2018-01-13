@@ -39,11 +39,11 @@ public class ZkAddress {
 	}
 	
 
-	public String getZkAddress() {
-		return this.address;
+	public String getAddress() {
+		return address;
 	}
 	
-	public String getZkPath() {
+	public String getPath() {
 		return path;
 	}
 

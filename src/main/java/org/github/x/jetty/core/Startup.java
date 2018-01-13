@@ -10,7 +10,7 @@ public class Startup {
 	private static final Logger LOG = Logger.getLogger(Startup.class);
 
 	public static void startup() {
-		LOG.info("Startup method...");
+		LOG.info("Starting method...");
 		TreeSet<EntryInfo> ts = new TreeSet<EntryInfo>(new Comparator<EntryInfo>() {
 			public int compare(EntryInfo o1, EntryInfo o2) {
 				int ret = o1.startup - o2.startup;

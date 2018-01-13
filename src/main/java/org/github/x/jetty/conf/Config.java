@@ -36,7 +36,7 @@ public class Config {
 	}
 
 	public static void setConfigFromZookeeper() {
-		String zkPath = ZkClient.getZkAdress().getZkPath();
+		String zkPath = ZkClient.getZkAdress().getPath();
 		List<String> children = ZkClient.getAllChildren(zkPath);
 		Watcher cfgWatcher = new Watcher() {
 			@Override
@@ -55,7 +55,7 @@ public class Config {
 				logProperties.put(key, value);
 			}
 		}
-		LOG.info("log configuretion will be changed");
+		LOG.info("Log configuretion will be changed");
 		if (LOG.isDebugEnabled()) {
 			StringBuffer sb = new StringBuffer();
 			for (Object k : logProperties.keySet()) {
