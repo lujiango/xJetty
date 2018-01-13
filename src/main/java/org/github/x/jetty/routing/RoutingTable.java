@@ -24,7 +24,12 @@ public class RoutingTable {
 		return elements.get(key);
 	}
 
-	void remove(String key) {
-		elements.remove(key);
+	void removeServ(String serv) {
+		elements.remove(serv);
 	}
+	
+	boolean containServ(String serv) {
+		return elements.containsKey(serv);
+	}
+	
 }

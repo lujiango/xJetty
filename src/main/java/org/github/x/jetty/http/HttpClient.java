@@ -20,28 +20,18 @@ public class HttpClient {
 	
 	private static org.eclipse.jetty.client.HttpClient client;
 	
-	private static ZkClient zkClient;
-	
 	private static Router router;
 	
 
 	public HttpClient() {
 		client = new org.eclipse.jetty.client.HttpClient();
-		router = new Router();
-		zkClient = Config.getSelf().getZkClient();
+		router = new Router(Config.getSelf().getZkClient());
 	}
 
 	@Entry(startup = -1000)
 	public void doStart() {
 		HttpClient client = new HttpClient();
-		
-		Pattern p = Pattern.compile("(/[^/]*){2}");
-        Matcher m = p.matcher(zkClient.getZkAddress().getPath());
-        m.find();
-        String routingTablePath = m.group().concat("/routing-table");
-        zkClient.touch(routingTablePath, new byte[0], CreateMode.PERSISTENT);
-        
-        
+		router.build();
 		client.doStart1();
 	}
 

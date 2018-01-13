@@ -3,6 +3,7 @@ package org.github.x.jetty.conf;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,6 +15,7 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.Watcher.Event.EventType;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.ZooKeeper.States;
 
@@ -239,10 +241,6 @@ public final class ZkClient {
 		return 0;
 	}
 	
-	public static void watch(String path, Watcher watcher, boolean isReconnect) {
-		
-	}
-	
 	/**
      * 确保路径上的节点存在。如果存在则返回该节点的值；如果不存在则创建并填入指定值并返回该值。
      * 创建节点时上层目录也会逐级创建并填写null值。所创建节点的类型为PERSISTENT
@@ -315,5 +313,118 @@ public final class ZkClient {
         }
     }
 	
+	
+	 /**
+     * 判断节点是否存在。
+     * 
+     * @param path
+     *            节点路径
+     * @return 是否存在
+     */
+    public boolean exist(String path) {
+        try {
+            return zookeeper.exists(path, null) != null;
+        } catch (KeeperException | InterruptedException ex) {
+            throw new IllegalStateException(ex.toString(), ex);
+        }
+    }
+
+	/**
+     * 给指定节点及其直接子节点添加指定Watcher。 本方法所注册的Watcher会在触发后重新注册，也会在断连重连后重新注册。
+     * 当节点删除后，不在注册监听
+     * 
+     * @param path
+     *            路径
+     * @param watcher
+     *            监听器
+     */
+    public void watch(String path, Watcher watcher) {
+        watch(path, watcher, false);
+    }
+
+    private void watch(String path, final Watcher watcher,
+            boolean isReConnect) {
+        if (!exist(path)) {
+            LOG.warn("path is not exists: " + path);
+            return;
+        }
+
+        if (watchers.containsKey(path) && watchers.get(path).contains(watcher)
+                && !isReConnect) {
+            // 已经注册过
+            LOG.warn("path is already be watched by the same watcher: " + path);
+        } else {
+            try {
+                // path的创建和删除的监听
+                zookeeper.exists(path, new Watcher() {
+                    @Override
+                    public void process(WatchedEvent paramWatchedEvent) {
+                        if (paramWatchedEvent.getType() == EventType.None) {
+                            // zookeeper服务器断开事件， 不做任何处理
+                            return;
+                        }
+                        watcher.process(paramWatchedEvent);
+                        if (paramWatchedEvent
+                                .getType() != EventType.NodeDeleted) {
+                            // 重新注册
+                            try {
+                                zookeeper.exists(paramWatchedEvent.getPath(),
+                                        this);
+                            } catch (Exception e) {
+                                LOG.warn("watch failed...", e);
+                            }
+                        } else {
+                            List<Watcher> watcherList = watchers
+                                    .get(paramWatchedEvent.getPath());
+                            if (watcherList != null) {
+                                watcherList.remove(watcher);
+                                if (watcherList.size() == 0) {
+                                    watchers.remove(
+                                            paramWatchedEvent.getPath());
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // path的直接子节点的事件监听
+                zookeeper.getChildren(path, new Watcher() {
+                    @Override
+                    public void process(WatchedEvent paramWatchedEvent) {
+                        if (paramWatchedEvent.getType() == EventType.None) {
+                            // zookeeper服务器断开事件， 不做任何处理
+                            return;
+                        }
+
+                        if (paramWatchedEvent
+                                .getType() != EventType.NodeDeleted) {
+                            watcher.process(paramWatchedEvent);
+                            // 重新注册
+                            try {
+                                    zookeeper.getChildren(
+                                            paramWatchedEvent.getPath(), this);
+                            } catch (Exception e) {
+                                LOG.warn("watch failed...", e);
+                            }
+                        }
+                    }
+                });
+                if (!isReConnect) {
+                    // 如果不是重连的情况，要将watcher纪录
+                    List<Watcher> watcherList;
+                    if (watchers.containsKey(path)) {
+                        watcherList = watchers.get(path);
+                    } else {
+                        watcherList = Collections
+                                .synchronizedList(new ArrayList<Watcher>());
+                        watchers.put(path, watcherList);
+                    }
+                    watcherList.add(watcher);
+                }
+            } catch (Exception e) {
+                LOG.warn("watch failed...", e);
+            }
+        }
+    }
 	
 }
