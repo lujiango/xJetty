@@ -21,11 +21,11 @@ import javassist.bytecode.MethodInfo;
 import javassist.bytecode.annotation.Annotation;
 
 import org.apache.log4j.Logger;
-import org.github.x.jetty.annotation.Register;
-import org.github.x.jetty.annotation.ZKConf;
-import org.github.x.jetty.annotation.validate.Constraint;
 import org.github.x.jetty.http.Param;
 import org.github.x.jetty.utils.ReflectUtils;
+import org.github.x.jetty.validate.Register;
+import org.github.x.jetty.validate.ZKConf;
+import org.github.x.jetty.validate.annotation.Constraint;
 
 import com.impetus.annovention.ClasspathDiscoverer;
 import com.impetus.annovention.Discoverer;
