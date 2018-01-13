@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
-import org.github.x.jetty.core.ZkClient;
 import org.github.x.jetty.utils.Consts;
 
 /**
@@ -18,8 +17,8 @@ import org.github.x.jetty.utils.Consts;
  * @author lujiango
  *
  */
-public class Configuration {
-	private static final Logger LOG = Logger.getLogger(Configuration.class);
+public class Config {
+	private static final Logger LOG = Logger.getLogger(Config.class);
 
 	private static Properties logProperties = new Properties();
 
@@ -27,17 +26,17 @@ public class Configuration {
 
 	public static void setDefaultLogConfig() {
 		try {
-			InputStream input = Configuration.class.getResourceAsStream("log4j_default.properties");
+			InputStream input = Config.class.getResourceAsStream("log4j_default.properties");
 			logProperties.load(input);
 			PropertyConfigurator.configure(logProperties);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOG.fatal("read default log from log4j_default.properties occur exception: ", e);
 			System.exit(Consts.XJETTY_EXIT_CODE);
 		}
 	}
 
 	public static void setConfigFromZookeeper() {
-		String zkPath = ZkClient.getCacheParam().getZkPath();
+		String zkPath = ZkClient.getZkAdress().getZkPath();
 		List<String> children = ZkClient.getAllChildren(zkPath);
 		Watcher cfgWatcher = new Watcher() {
 			@Override

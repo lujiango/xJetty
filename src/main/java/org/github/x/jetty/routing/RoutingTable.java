@@ -3,6 +3,8 @@ package org.github.x.jetty.routing;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.github.x.jetty.http.Address;
+
 public class RoutingTable {
 	private Map<String, CycleQueue<Address>> elements = new ConcurrentHashMap<String, CycleQueue<Address>>();
 

@@ -1,6 +1,7 @@
 package org.github.x.jetty.core;
 
-import org.github.x.jetty.conf.Configuration;
+import org.github.x.jetty.conf.Config;
+import org.github.x.jetty.conf.ZkClient;
 /**
  * 
  * @author lujiango
@@ -10,7 +11,7 @@ import org.github.x.jetty.conf.Configuration;
 public class xJetty {
 	
 	public static void main(String[] args) {
-		xJetty.start("admin:admin@127.0.0.1:2181/zookeeper/lujiango/xjetty/xjetty-1");
+		xJetty.start("admin:admin@127.0.0.1:2181/x/jetty/xjetty-1");
 	}
 	
 	/**
@@ -20,11 +21,11 @@ public class xJetty {
 	 */
 	public static void start(String args) {
 		
-		Configuration.setDefaultLogConfig();
+		Config.setDefaultLogConfig();
 		
 		ZkClient.connect(args);
 		
-		Configuration.setConfigFromZookeeper();
+//		Config.setConfigFromZookeeper();
 		
 		AnnotationScanner.scanSupportedAnnotations();
 		

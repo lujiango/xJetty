@@ -5,7 +5,7 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.session.SessionHandler;
-import org.github.x.jetty.conf.Configuration;
+import org.github.x.jetty.conf.Config;
 import org.github.x.jetty.core.Entry;
 import org.github.x.jetty.utils.Consts;
 /**
@@ -22,15 +22,15 @@ private static final Logger LOG = Logger.getLogger(HttpServer.class);
 	
 	@Entry(startup = -900)
 	public void startup() {
-		String tmpIp = Configuration.getAsString(Consts.XJETTY_LISTEN_IP, null);
+		String tmpIp = Config.getAsString(Consts.XJETTY_LISTEN_IP, null);
 		if (tmpIp == null) {
 			LOG.fatal("Listen-ip is not set and xJetty will exit...");
 		}
-		if (!tmpIp.matches(Consts.IP_REGEX)) {
+		if (!tmpIp.matches(Address.IP_REGEX)) {
 			LOG.fatal("Listen-ip pattern is unqualified and xJetty will exit...");
 		}
 		
-		int tmpPort = Configuration.getAsInt(Consts.XJETTY_LISTEN_PORT, -1);
+		int tmpPort = Config.getAsInt(Consts.XJETTY_LISTEN_PORT, -1);
 		
 		HttpServer server = new HttpServer(tmpIp, tmpPort);
 		HandlerList hl = new HandlerList();

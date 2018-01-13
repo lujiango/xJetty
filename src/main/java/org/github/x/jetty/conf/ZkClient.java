@@ -1,19 +1,16 @@
-package org.github.x.jetty.core;
+package org.github.x.jetty.conf;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.ZooKeeper.States;
-import org.github.x.jetty.utils.SecurityUtils;
 
 public final class ZkClient {
 	private static final Logger LOG = Logger.getLogger(ZkClient.class);
@@ -24,13 +21,11 @@ public final class ZkClient {
 	
 	private static final int RECONNECT_THRESHOLD = 7;
 	
-	private static final String AUTH = "digest";
-	
-	private static final String ARGS_REGEX = "(\\w+):(\\w+)@([^/]+)(/.+)";
+	private static final String DIGEST = "digest";
 	
 	private static ZooKeeper zookeeper = null;
 	
-	private static ConnectParam cacheParam = new ConnectParam("admin", "admin", "127.0.0.1", 2181, "/");
+	private static ZkAddress zkAdress = new ZkAddress();
 	
 	
 	private static Map<String, List<Watcher>> watchers = new ConcurrentHashMap<String, List<Watcher>>();
@@ -64,7 +59,7 @@ public final class ZkClient {
 						}
 						setZookeeper(null);
 					}
-					connect(cacheParam);
+					connect(zkAdress);
 
 					break;
 				}
@@ -74,16 +69,21 @@ public final class ZkClient {
 			}
 		}
 	};
+	
+	public static void connect(String args) {
+		zkAdress.parse(args);
+		connect(zkAdress);
+	}
 
-	public static void connect(ConnectParam param) {
-		if (getZookeeper() != null) {
-			throw new IllegalStateException("ZkClient has connected to " + param.getAddress());
+	private static void connect(ZkAddress zkAddress) {
+		if (getZookeeper() != null && getZookeeper().getState() == States.CONNECTED) {
+			throw new IllegalStateException("ZkClient has connected to " + zkAddress.getZkAddress());
 		}
 		try {
 
-			ZooKeeper zk = new ZooKeeper(param.getAddress(), SESSION_TIMEOUT, connectWatcher);
-
-			while (zk.getState() != States.CONNECTED) {
+			setZookeeper(new ZooKeeper(zkAddress.getZkAddress(), SESSION_TIMEOUT, connectWatcher));
+            
+			while (getZookeeper().getState() != States.CONNECTED) {
 				try {
 					Thread.sleep(CONNECT_INTERVAL);
 				} catch (InterruptedException e) {
@@ -91,38 +91,27 @@ public final class ZkClient {
 				}
 			}
 
-			zk.addAuthInfo(AUTH, param.authUserPasswd());
-
-			setZookeeper(zk);
+			getZookeeper().addAuthInfo(DIGEST, zkAddress.authUserPasswd());
+			
+			LOG.info("ZkClient has connected to " + zkAddress.getZkAddress());
 
 		} catch (IOException e) {
 			LOG.warn("Connect zookeeper failed. ", e);
-			reconnect(cacheParam);
+			reconnect(zkAdress);
 		}
 	}
 
-	public static void connect(String args) {
-		Pattern p = Pattern.compile(ARGS_REGEX);
-		Matcher m = p.matcher(args);
-		if (!m.find() || m.groupCount() != 4) {
-			LOG.error("Argument should be seen as zkuser:zkpasswd@zkip:zkport/zkpath, args:" + args);
-			throw new IllegalArgumentException("Argument should be seen as zkuser:zkpasswd@zkip:zkport/zkpath");
-		}
-		cacheParam = new ConnectParam(m.group(0), m.group(1), m.group(2), Integer.parseInt(m.group(3)), m.group(4));
-		connect(cacheParam);
-	}
-
-	public static void reconnect(ConnectParam param) {
+	public static void reconnect(ZkAddress zkAddress) {
 		int retryTimes = 0;
 		while (getZookeeper() == null || getZookeeper().getState() != States.CONNECTED) {
 			try {
 				Thread.sleep(CONNECT_INTERVAL);
-				ZooKeeper zk = new ZooKeeper(param.getAddress(), SESSION_TIMEOUT, connectWatcher);
+				ZooKeeper zk = new ZooKeeper(zkAddress.getZkAddress(), SESSION_TIMEOUT, connectWatcher);
 				if (retryTimes > RECONNECT_THRESHOLD) {
 					throw new IllegalStateException("Reconnect zookeeper " + retryTimes + " times");
 				}
 				retryTimes++;
-				zk.addAuthInfo(AUTH, param.authUserPasswd());
+				zk.addAuthInfo(DIGEST, zkAddress.authUserPasswd());
 				setZookeeper(zk);
 			} catch (Exception e) {
 				LOG.warn("Reconnect zookeeper failed. ", e);
@@ -141,8 +130,8 @@ public final class ZkClient {
 	
 	
 
-	public static ConnectParam getCacheParam() {
-		return cacheParam;
+	public static ZkAddress getZkAdress() {
+		return zkAdress;
 	}
 
 	public static List<String> getAllChildren(String parent) {
@@ -170,41 +159,5 @@ public final class ZkClient {
 	
 	public static void watch(String path, Watcher watcher, boolean isReconnect) {
 		
-	}
-	
-
-
-	public static class ConnectParam {
-		private String zkUser;
-		private String zkPasswd;
-		private String zkIp;
-		private int zkPort;
-		private String zkPath;
-
-		public ConnectParam(String zkUser, String zkPasswd, String zkIp, int zkPort, String zkPath) {
-			this.zkUser = zkUser;
-			this.zkPasswd = zkPasswd;
-			this.zkIp = zkIp;
-			this.zkPort = zkPort;
-			this.zkPath = zkPath;
-		}
-
-		public String getAddress() {
-			return zkIp + ":" + zkPort;
-		}
-		
-		public String getZkPath() {
-			return zkPath;
-		}
-
-		public byte[] authUserPasswd() {
-			byte[] authInfo = null;
-			try {
-				authInfo = (zkUser + ":" + zkPasswd).getBytes(SecurityUtils.UTF_8);
-			} catch (Exception e) {
-				LOG.warn("charset not supported: ", e);
-			}
-			return authInfo;
-		}
 	}
 }
