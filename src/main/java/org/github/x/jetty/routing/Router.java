@@ -64,6 +64,7 @@ public final class Router {
             @Override
             public void process(WatchedEvent event) {
                 String path = event.getPath();
+                String serv = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf("-"));
                 if (event.getType() == EventType.NodeChildrenChanged) {
                     Set<String> childrenSet = new HashSet<String>();
                     for (Object key : p.keySet()) {
@@ -105,33 +106,17 @@ public final class Router {
                         }
                     }
                 } else if (event.getType() == EventType.NodeDeleted) {
-                    if (p.containsKey(path)) {
-                        // 节点删除，删除对应节点的配置属性值
-                        String value = p.get(path).toString();
-                        p.remove(path);
-                        String instanceName = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf("-"));
-                        if (rt.containsKey(instanceName)) {
-                            CycleList<String> hostList = rt.get(instanceName);
-                            hostList.remove(value);
-                            if (hostList.isEmpty()) {
-                                rt.remove(instanceName);
+                    if (routingTable.containServ(serv)) {
+                            CycleQueue<Address> addr = routingTable.get(serv);
+                            addr.remove(zkClient.getString(path, ""));
+                            if (addr.isEmpty()) {
+                                routingTable.removeServ(serv);
                             }
-                        }
-
-                        if (reCreate) {
                             // 如果监听的是自身实例，则需要重新注册routing-table
                             if (path.substring(path.lastIndexOf("/") + 1)
-                                    .equals(Main.getNodeName().substring(Main.getNodeName().lastIndexOf("/") + 1))) {
-                                LOG.warn("instance self routing-table path has been deleted, recreate...");
-                                if (HttpServer.getListenPortHttp() != -1) {
-                                    // 此时节点已经被删除，不需要在注册时在删除
-                                    HttpServer.registerRoute(RoutingTableRegisterType.Register);
-                                }
-                                if (HttpServer.getListenPortHttps() != -1) {
-                                    HttpServer.registerHttpsRoute(RoutingTableRegisterType.Register);
-                                }
+                                    .equals(zkClient.getZkAddress().getAddress().substring(zkClient.getZkAddress().getAddress().lastIndexOf("/") + 1))) {
+                            // 需要注册zk节点
                             }
-                        }
                     }
                 } else if (event.getType() == EventType.NodeDataChanged) {
                     if (p.containsKey(path)) {
@@ -154,7 +139,6 @@ public final class Router {
         for (String key : serverNodes) {
             zkClient.watch(key, routeWatcher);
         }
-        
         
 	}
 

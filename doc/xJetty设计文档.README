@@ -1,0 +1,8 @@
+﻿（1）配置由Config实例化，包括日志配置和业务配置，且这些配置为了保证一致性全部配置在zookeeper。同时用户的输入也被Config对象管理。
+
+（2）ZkClent负责链接zookeeper。
+（3）zk配置初始地址不使用listen-ip和listen-port，而使用address形式如127.0.0.1:8080，不再分开配置，如果zk不配置，则默认使用内置端口启动9180.
+（4）自启动使用@Startup(89),而不是@Entry(startup=90)
+（5）动态负载均衡，支持负载算法，易扩展
+（6）支持http和https
+（7）支持{testfk}/test/_get调用
