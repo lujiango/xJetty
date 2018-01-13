@@ -4,19 +4,27 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.github.x.jetty.http.Address;
-
+/**
+ * 内部服务的路由表
+ * @author lujiango
+ *
+ */
 public class RoutingTable {
-	private Map<String, CycleQueue<Address>> elements = new ConcurrentHashMap<String, CycleQueue<Address>>();
-
-	public void put(String key, CycleQueue<Address> value) {
+	private Map<String, CycleQueue<Address>> elements;
+	
+	RoutingTable() {
+		this.elements = new ConcurrentHashMap<>();
+	}
+	
+	void put(String key, CycleQueue<Address> value) {
 		elements.put(key, value);
 	}
 
-	public CycleQueue<Address> get(String key) {
+	CycleQueue<Address> get(String key) {
 		return elements.get(key);
 	}
 
-	public void remove(String key) {
+	void remove(String key) {
 		elements.remove(key);
 	}
 }

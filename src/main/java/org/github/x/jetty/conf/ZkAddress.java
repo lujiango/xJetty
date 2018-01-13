@@ -9,14 +9,16 @@ import org.github.x.jetty.utils.SecurityUtils;
 public class ZkAddress {
 	public static final String ARGS_REGEX = "(\\w+):(\\w+)@([^/]+)(/.+)";
 	private static final Logger LOG = Logger.getLogger(ZkAddress.class);
-	
+
 	private String user;
 	private String passwd;
 	private String address;
 	private String path;
-	
-	public ZkAddress() {
-		this("admin", "admin", "127.0.0.1:2181", "/");
+
+	public ZkAddress() {}
+
+	public ZkAddress(String addressInfo) {
+		parse(addressInfo);
 	}
 
 	public ZkAddress(String zkUser, String zkPasswd, String zkAddress, String zkPath) {
@@ -25,7 +27,7 @@ public class ZkAddress {
 		this.address = zkAddress;
 		this.path = zkPath;
 	}
-	
+
 	public void parse(String addresssInfo) {
 		Pattern p = Pattern.compile(ARGS_REGEX);
 		Matcher m = p.matcher(addresssInfo);
@@ -37,12 +39,11 @@ public class ZkAddress {
 		this.address = m.group(3);
 		this.path = m.group(4);
 	}
-	
 
 	public String getAddress() {
 		return address;
 	}
-	
+
 	public String getPath() {
 		return path;
 	}

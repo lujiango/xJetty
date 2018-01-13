@@ -1,7 +1,12 @@
 package org.github.x.jetty.routing;
 
 import java.util.concurrent.LinkedBlockingQueue;
-
+/**
+ * 路由策略，将来希望可以扩展
+ * @author lujiango
+ *
+ * @param <E>
+ */
 public class CycleQueue<E> extends LinkedBlockingQueue<E> {
 	/**
 	 * 

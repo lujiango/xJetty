@@ -9,10 +9,12 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
+import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.ZooKeeper.States;
 
 public final class ZkClient {
@@ -26,14 +28,17 @@ public final class ZkClient {
 	
 	private static final String DIGEST = "digest";
 	
-	private static ZooKeeper zookeeper = null;
+	private ZooKeeper zookeeper;
 	
-	private static ZkAddress zkAdress = new ZkAddress();
+	private ZkAddress zkAddress;
 	
+	public ZkClient(ZkAddress address) {
+		this.zkAddress = address;
+	}
 	
 	private static Map<String, List<Watcher>> watchers = new ConcurrentHashMap<String, List<Watcher>>();
 	
-	private static Watcher connectWatcher = new Watcher() {
+	private Watcher connectWatcher = new Watcher() {
 		private long preSessionId = 0L;
 
 		@Override
@@ -62,7 +67,7 @@ public final class ZkClient {
 						}
 						setZookeeper(null);
 					}
-					connect(zkAdress);
+					tryConnect();
 
 					break;
 				}
@@ -73,12 +78,7 @@ public final class ZkClient {
 		}
 	};
 	
-	public static void connect(String args) {
-		zkAdress.parse(args);
-		connect(zkAdress);
-	}
-
-	private static void connect(ZkAddress zkAddress) {
+	public void tryConnect() {
 		if (getZookeeper() != null && getZookeeper().getState() == States.CONNECTED) {
 			throw new IllegalStateException("ZkClient has connected to " + zkAddress.getAddress());
 		}
@@ -99,20 +99,20 @@ public final class ZkClient {
 			LOG.info("ZkClient has connected to " + zkAddress.getAddress());
 
 		} catch (IOException e) {
-			LOG.warn("Connect zookeeper failed. ", e);
-			reconnect(zkAdress);
+			LOG.warn("Connect zookeeper exception: ", e);
+			tryConnect();
 		}
 	}
 
-	public static void reconnect(ZkAddress zkAddress) {
+	public void test() {
 		int retryTimes = 0;
 		while (getZookeeper() == null || getZookeeper().getState() != States.CONNECTED) {
+			if (retryTimes > RECONNECT_THRESHOLD) {
+				throw new IllegalStateException("Reconnect zookeeper " + retryTimes + " times");
+			}
 			try {
 				Thread.sleep(CONNECT_INTERVAL);
 				ZooKeeper zk = new ZooKeeper(zkAddress.getAddress(), SESSION_TIMEOUT, connectWatcher);
-				if (retryTimes > RECONNECT_THRESHOLD) {
-					throw new IllegalStateException("Reconnect zookeeper " + retryTimes + " times");
-				}
 				retryTimes++;
 				zk.addAuthInfo(DIGEST, zkAddress.authUserPasswd());
 				setZookeeper(zk);
@@ -122,26 +122,26 @@ public final class ZkClient {
 		}
 	}
 
-	public static ZooKeeper getZookeeper() {
+	public ZooKeeper getZookeeper() {
 		return zookeeper;
 	}
 
-	public static void setZookeeper(ZooKeeper zookeeper) {
-		ZkClient.zookeeper = zookeeper;
+	public void setZookeeper(ZooKeeper zookeeper) {
+		this.zookeeper = zookeeper;
 	}
 	
 	
 	
 
-	public static ZkAddress getZkAdress() {
-		return zkAdress;
+	public ZkAddress getZkAddress() {
+		return zkAddress;
 	}
 
-	public static List<String> getAllChildren(String parent) {
+	public List<String> getAllChildren(String parent) {
 		return getChildren1(parent, true);
 	}
 	
-	public static List<String> getChildren(String root) {
+	public List<String> getChildren(String root) {
 		try {
             List<String> retList = new ArrayList<String>();
             addAllWithPrefix(retList, root, zookeeper.getChildren(root, false));
@@ -164,7 +164,7 @@ public final class ZkClient {
         }
     }
 	
-	private static List<String> getChildren1(String parent, boolean recursion) {
+	private List<String> getChildren1(String parent, boolean recursion) {
 		try {
             // 结果集
             List<String> childrenList = getChildren(parent);
@@ -195,7 +195,7 @@ public final class ZkClient {
 		return null;
 	}
 	
-	public static String getString(String key, String defaultValue) {
+	public String getString(String key, String defaultValue) {
 		byte[] b = getBytes(key, null);
         if (b == null) {
             return defaultValue;
@@ -218,7 +218,7 @@ public final class ZkClient {
      *            缺省值
      * @return 节点对应的值或缺省值
      */
-    public static byte[] getBytes(String name, byte[] defaultValue) {
+    public byte[] getBytes(String name, byte[] defaultValue) {
         try {
             return getZookeeper().getData(name, false, null);
         } catch (KeeperException ex) {
@@ -242,4 +242,78 @@ public final class ZkClient {
 	public static void watch(String path, Watcher watcher, boolean isReconnect) {
 		
 	}
+	
+	/**
+     * 确保路径上的节点存在。如果存在则返回该节点的值；如果不存在则创建并填入指定值并返回该值。
+     * 创建节点时上层目录也会逐级创建并填写null值。所创建节点的类型为PERSISTENT
+     * 
+     * @param path
+     *            节点路径
+     * @param value
+     *            如果节点不存在时填入的值
+     * @param mode
+     *            节点类型
+     * @return byte[]
+     */
+	public byte[] touch(String path, byte[] value, CreateMode mode) {
+        if (path == null) {
+            throw new NullPointerException("Path is null");
+        }
+        if (path.charAt(0) != '/') {
+            throw new IllegalArgumentException(
+                    "Path not starts with '/' :" + path);
+        }
+        if (path.length() == 1) {
+            throw new IllegalArgumentException("Path can be '/'");
+        }
+
+        // 尝试创建父节点
+        int n = path.indexOf('/', 1);
+        while (n != -1) {
+            String key = path.substring(0, n);
+            n = path.indexOf('/', n + 1);
+            try {
+                // 不存在
+                if (zookeeper.exists(key, false) == null) {
+                    zookeeper.create(key, null, Ids.OPEN_ACL_UNSAFE,
+                            CreateMode.PERSISTENT);
+                }
+            } catch (KeeperException ex) {
+                // 节点已存在这个Exception为正常情况，忽略之其它情况则是不正常
+                if (ex.code() != KeeperException.Code.NODEEXISTS) {
+                    throw new IllegalStateException(
+                            "Create node " + key + " error", ex);
+                }
+            } catch (InterruptedException ex) {
+                throw new IllegalStateException("Create node " + key + " error",
+                        ex);
+            }
+        }
+
+        // 尝试创建指定节点
+        try {
+            // 不存在
+            if (zookeeper.exists(path, false) == null) {
+                zookeeper.create(path, value, Ids.OPEN_ACL_UNSAFE, mode);
+                return value;// 创建成功
+            }
+
+            // 节点存在
+            return getBytes(path, value);
+        } catch (KeeperException ex) {
+            // 节点已存在这个Exception为正常情况，忽略之，其它情况则是不正常
+            if (ex.code() != KeeperException.Code.NODEEXISTS) {
+                throw new IllegalStateException(
+                        "Create node " + path + " error", ex);
+            }
+
+            // 节点存在
+            return getBytes(path, value);
+        } catch (InterruptedException ex) {
+            throw new IllegalStateException("Create node " + path + " error",
+                    ex);
+        }
+    }
+	
+	
 }

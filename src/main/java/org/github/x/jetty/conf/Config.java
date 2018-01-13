@@ -18,24 +18,40 @@ import org.github.x.jetty.utils.Consts;
  *
  */
 public class Config {
-	private static final Logger LOG = Logger.getLogger(Config.class);
+	private static final Config self = new Config();
 
-	private static Properties logProperties = new Properties();
+	private Properties logProperties;
 
-	private static Properties confProperties = new Properties();
+	private Properties confProperties;
 
-	public static void setDefaultLogConfig() {
-		try {
-			InputStream input = Config.class.getResourceAsStream("log4j_default.properties");
-			logProperties.load(input);
-			PropertyConfigurator.configure(logProperties);
-		} catch (IOException e) {
-			LOG.fatal("read default log from log4j_default.properties occur exception: ", e);
-			System.exit(Consts.XJETTY_EXIT_CODE);
-		}
+	private ZkClient zkClient;
+	
+	
+
+	public ZkClient getZkClient() {
+		return zkClient;
 	}
 
-	public static void setConfigFromZookeeper() {
+	public void setZkClient(ZkClient zkClient) {
+		this.zkClient = zkClient;
+	}
+
+	public static Config getSelf() {
+		return self;
+	}
+
+	private Config() {
+		this.logProperties = new Properties();
+		this.confProperties = new Properties();
+	}
+
+	public void initLogConfig() throws IOException {
+		InputStream input = Config.class.getResourceAsStream("log4j_default.properties");
+		logProperties.load(input);
+		PropertyConfigurator.configure(logProperties);
+	}
+
+	public void setConfigFromZookeeper() {
 		String zkPath = ZkClient.getZkAdress().getPath();
 		List<String> children = ZkClient.getAllChildren(zkPath);
 		Watcher cfgWatcher = new Watcher() {

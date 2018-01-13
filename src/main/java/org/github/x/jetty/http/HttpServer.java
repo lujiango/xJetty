@@ -16,6 +16,7 @@ import org.github.x.jetty.utils.Consts;
  */
 public class HttpServer extends Server {
 	private static final Logger LOG = Logger.getLogger(HttpServer.class);
+	private static final String ADDRESS = "address";
 
 	public HttpServer() {}
 
@@ -25,7 +26,7 @@ public class HttpServer extends Server {
 
 	@Entry(startup = -900)
 	public void startup() {
-		String tmpIp = Config.getAsString(Consts.XJETTY_LISTEN_IP, null);
+		String tmpIp = Config.getAsString(ADDRESS, null);
 		if (tmpIp == null) {
 			LOG.fatal("Listen-ip is not set and xJetty will exit...");
 		}
