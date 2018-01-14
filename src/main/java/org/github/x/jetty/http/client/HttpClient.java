@@ -1,9 +1,9 @@
-package org.github.x.jetty.http;
+package org.github.x.jetty.http.client;
 
 import org.apache.log4j.Logger;
 import org.github.x.jetty.conf.Config;
 import org.github.x.jetty.core.Entry;
-import org.github.x.jetty.routing.Router;
+import org.github.x.jetty.http.routing.Router;
 
 /**
  * 

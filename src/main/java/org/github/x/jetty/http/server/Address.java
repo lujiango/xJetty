@@ -1,4 +1,4 @@
-package org.github.x.jetty.http;
+package org.github.x.jetty.http.server;
 
 import java.net.URL;
 

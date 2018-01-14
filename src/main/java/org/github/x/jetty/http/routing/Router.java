@@ -1,4 +1,4 @@
-package org.github.x.jetty.routing;
+package org.github.x.jetty.http.routing;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -9,8 +9,8 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.Watcher.Event.EventType;
 import org.github.x.jetty.conf.ZkClient;
-import org.github.x.jetty.http.Address;
-import org.github.x.jetty.routing.RoutingTable.Entry;
+import org.github.x.jetty.http.routing.RoutingTable.Entry;
+import org.github.x.jetty.http.server.Address;
 
 /**
  * 内部路由器
