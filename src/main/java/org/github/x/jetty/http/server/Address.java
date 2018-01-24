@@ -9,7 +9,7 @@ public class Address {
 
 	public static final String HTTP = "http";
 
-	public static final String HTTPS = "HTTPS";
+	public static final String HTTPS = "https";
 
 	private String address;
 

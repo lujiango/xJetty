@@ -1,28 +1,18 @@
 package org.github.x.jetty.http.server;
 
 import java.net.URISyntaxException;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.CreateMode;
-import org.eclipse.jetty.io.ByteBufferPool;
-import org.eclipse.jetty.io.EndPoint;
-import org.eclipse.jetty.server.ConnectionFactory;
-import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.session.SessionHandler;
-import org.eclipse.jetty.util.component.LifeCycle.Listener;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.eclipse.jetty.util.thread.Scheduler;
 import org.github.x.jetty.conf.Config;
 import org.github.x.jetty.conf.ZkClient;
 import org.github.x.jetty.core.Entry;
