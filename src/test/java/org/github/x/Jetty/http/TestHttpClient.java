@@ -1,6 +1,6 @@
 package org.github.x.Jetty.http;
 
-import org.github.x.jetty.http.HttpClient;
+import org.github.x.jetty.http.client.HttpClient;
 import org.junit.Test;
 
 public class TestHttpClient {

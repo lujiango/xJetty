@@ -4,7 +4,7 @@
 	<groupId>org.github.xJetty</groupId>
 	<artifactId>xJetty</artifactId>
 	<version>0.0.1</version>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 	<name>xJetty</name>
 	<description>xJetty is a distructed server basic on Jetty</description>
 	<properties>
@@ -62,4 +62,9 @@
 		</dependency>
 
 	</dependencies>
+	<modules>
+		<module>xJetty-server</module>
+		<module>xJetty-client</module>
+		<module>xJetty-http</module>
+	</modules>
 </project>
